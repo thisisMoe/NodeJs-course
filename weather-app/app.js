@@ -1,47 +1,22 @@
-const request = require('request');
 const geocode = require('./utils/geocode');
 const forecast = require('./utils/forecast');
 
-const url =
-	'https://api.darksky.net/forecast/c0c3d2464e2e7d27281f4190e4f01530/37.8267,-122.4233?lang=fr&units=si&exclude=minutely,hourly';
+const address = process.argv[2];
 
-//Geocode URL
-// const mapboxUrl =
-// 	'https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=pk.eyJ1IjoibWVtbWVkIiwiYSI6ImNrM2Q1eTVsMTEycXkzaXMxY203czlvMzgifQ.u5wE_IAbKb7XVtr4T0Bt3g&limit=1';
-
-// DarkSky API http request
-// request({ url: url, json: true }, (error, response) => {
-// 	console.log(
-// 		response.body.daily.data[0].summary +
-// 			' Il fait actuellement ' +
-// 			response.body.currently.temperature +
-// 			' degrés.' +
-// 			'Il y a ' +
-// 			response.body.currently.precipProbability +
-// 			'% de chances de pluie.'
-// 	);
-// });
-
-geocode('Boston', (error, data) => {
-	console.log('Error', error);
-	console.log('Data', data);
-});
-
-//Requesting mapbox api
-// request({ url: mapboxUrl, json: true }, (error, response) => {
-// 	if (error) {
-// 		console.log('Unable to connect to Geolocalisation service');
-// 	} else if (response.body.message) {
-// 		console.log('Something wrong happened!');
-// 	} else if (response.body.features.length === 0) {
-// 		console.log('Unable to find location, Try another place');
-// 	} else {
-// 		console.log('Longitude: ' + response.body.features[0].center[0]);
-// 		console.log('Latitude: ' + response.body.features[0].center[1]);
-// 	}
-// });
-
-forecast(42.3605, -71.0596, (error, data) => {
-	console.log('Error', error);
-	console.log('Data', data);
-});
+if (!address) {
+	console.log('Please provide an address');
+} else {
+	//using objects destructuring here
+	geocode(process.argv[2], (error, { lat, long, location }) => {
+		if (error) {
+			return console.log(error);
+		}
+		forecast(lat, long, (forecastError, forecastData) => {
+			if (forecastError) {
+				return console.log(forecastError);
+			}
+			console.log(location);
+			console.log(forecastData);
+		});
+	});
+}

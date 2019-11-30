@@ -1,5 +1,4 @@
 const request = require('request');
-
 //
 // Goal: Create a reusable function for getting the forecast
 //
@@ -18,19 +17,19 @@ const forecast = (lat, long, callback) => {
 		String(long) +
 		'?lang=fr&units=si&exclude=minutely,hourly';
 
-	request({ url: url, json: true }, (error, response) => {
+	request({ url, json: true }, (error, { body }) => {
 		if (error) {
 			callback('Impossible de se connecter au service de Meteo', undefined);
-		} else if (response.body.error) {
-			callback(response.body.error, undefined);
+		} else if (body.errors) {
+			callback(body.error, undefined);
 		} else {
 			const msg =
-				response.body.daily.data[0].summary +
+				body.daily.data[0].summary +
 				' Il fait actuellement ' +
-				response.body.currently.temperature +
+				body.currently.temperature +
 				' degrés.' +
 				'Il y a ' +
-				response.body.currently.precipProbability +
+				body.currently.precipProbability +
 				'% de chances de pluie.';
 
 			callback(undefined, msg);
